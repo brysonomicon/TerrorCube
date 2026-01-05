@@ -26,11 +26,18 @@ namespace TerrorCube.Player
         [SerializeField] private float jumpSpeed = 8.0f;                // The speed at which the character's up axis gains when hitting jump
         [SerializeField] private bool holdJumpToBhop = false;           // When enabled allows player to just hold jump button to keep on bhopping perfectly.
 
+        [Header("Sliding Settings")]
+        [SerializeField] private float slideFriction = 0f;
+        [SerializeField] private float slideHeight = 1.0f;
+        [SerializeField] private float normalHeight = 2.0f;
+        [SerializeField] private float slideTransitionSpeed = 10f;
+
         private CharacterController _controller;
         
         // Inputs
         private Vector2 _moveInput;
         private bool _wishJump;
+        private bool _wishCrouch;
 
         // Physics State
         private Vector3 _velocity;
@@ -68,8 +75,19 @@ namespace TerrorCube.Player
             }
         }
 
+        public void OnCrouch(InputAction.CallbackContext context)
+        {
+            _wishCrouch = context.ReadValueAsButton();
+        }
+
         private void Update()
         {
+            // Handle Crouch Height
+            float targetHeight = _wishCrouch ? slideHeight : normalHeight;
+            _controller.height = Mathf.Lerp(_controller.height, targetHeight, slideTransitionSpeed * Time.deltaTime);
+            // Re-center center to avoid sinking into ground
+            _controller.center = new Vector3(0, _controller.height / 2f, 0);
+
             // Update input values for the frame
             _cmdForwardMove = _moveInput.y;
             _cmdRightMove = _moveInput.x;
@@ -169,11 +187,21 @@ namespace TerrorCube.Player
         {
             Vector3 wishDir;
 
-            // Do not apply friction if the player is queueing up the next jump
-            if (!_wishJump)
+            // Crouch Slide Logic: No friction if crouching
+            bool isSliding = _wishCrouch;
+
+            if (isSliding)
+            {
+                ApplyFriction(slideFriction);
+            }
+            else if (!_wishJump)
+            {
                 ApplyFriction(1.0f);
+            }
             else
+            {
                 ApplyFriction(0);
+            }
 
             SetMovementDir(out wishDir);
             wishDir.Normalize();
@@ -182,6 +210,12 @@ namespace TerrorCube.Player
             wishSpeed *= moveSpeed;
 
             Accelerate(wishDir, wishSpeed, runAcceleration);
+
+            // Secret Sauce: Apply Air Control logic while sliding to allow sharp turns without losing speed
+            if (isSliding)
+            {
+                ApplyAirControl(wishDir, wishSpeed);
+            }
 
             // Reset the gravity velocity
             _velocity.y = -gravityForce * Time.deltaTime; 
