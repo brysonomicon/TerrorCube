@@ -112,6 +112,17 @@
                 {
                     "name": "",
                     "id": "143bb1cd-cc10-4eca-a2f0-a366a33b524b",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "143bb1cd-cc10-4eca-a2f0-a366a33b524c",
                     "path": "<Keyboard>/space",
                     "interactions": "",
                     "processors": "",
