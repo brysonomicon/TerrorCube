@@ -24,7 +24,7 @@ namespace TerrorCube.Player
         [SerializeField] private float sideStrafeAcceleration = 50.0f;  // How fast acceleration occurs to get up to sideStrafeSpeed when side strafing
         [SerializeField] private float sideStrafeSpeed = 1.0f;          // What the max speed to generate when side strafing
         [SerializeField] private float jumpSpeed = 8.0f;                // The speed at which the character's up axis gains when hitting jump
-        [SerializeField] private bool holdJumpToBhop = false;           // When enabled allows player to just hold jump button to keep on bhopping perfectly.
+        [SerializeField] private bool holdJumpToBhop = false;           // When enabled allows player to just hold jump button to keep on bhopping perfectly. Beware: smells like casual.
 
         [Header("Sliding Settings")]
         [SerializeField] private float slideFriction = 0f;
